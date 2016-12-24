@@ -7,6 +7,8 @@ var PORT = (process.env.PORT || 5000);
 var TAG_START = "##START";
 var TAG_END   = "##END";
 
+var NB_HEROES_TO_PARSE = 1;
+
 var HEROES = {};
 GetHeroesInformation();
 
@@ -106,7 +108,7 @@ function GetHeroes(_userID, _callback) {
         var parsedData = JSON.parse(rawData);
 
         var heroes = [];
-        for (var i=0; i<3; ++i) {
+        for (var i=0; i<NB_HEROES_TO_PARSE; ++i) {
           var hero = parsedData[i];
           heroes.push({
             hero_id: hero.hero_id,
@@ -123,23 +125,6 @@ function GetHeroes(_userID, _callback) {
       });
     }
   });
-}
-
-function CreateTextToSend(_data) {
-  var text = "W/L: " + _data.win + "/" + _data.lose + '\n';
-  text += "===\n";
-
-  var nbHeroes = _data.heroes.length;
-  for (var i=0; i<nbHeroes; ++i) {
-    var hero = _data.heroes[i];
-
-    var name = HEROES[hero.hero_id].localized_name;
-    var lose = hero.games - hero.win;
-    var ratio = Math.floor((hero.win / hero.games) * 100);
-    text += name + ": " + hero.games + " (" + hero.win + '/' + lose + " | " + ratio + "%)\n";
-  }
-
-  return text;
 }
 
 function GetHeroesInformation() {
@@ -164,4 +149,24 @@ function GetHeroesInformation() {
       });
     }
   });
+}
+
+function CreateTextToSend(_data) {
+  var text = "W/L: " + _data.win + "/" + _data.lose + '\n';
+  text += "===\n";
+
+  var nbHeroes = _data.heroes.length;
+  for (var i=0; i<nbHeroes; ++i) {
+    var hero = _data.heroes[i];
+
+    var name = HEROES[hero.hero_id].localized_name;
+    var lose = hero.games - hero.win;
+    var ratio = Math.floor((hero.win / hero.games) * 100);
+    text += name + ":\n"
+    text += hero.games + " Games\n";
+    text += "W/L: " + hero.win + '/' + lose + "\n";
+    text += "Ratio: " + ratio + "%\n";
+  }
+
+  return text;
 }
